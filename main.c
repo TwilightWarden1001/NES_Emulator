@@ -62,22 +62,43 @@ int load_rom(Bus *bus) {
     // Allocate dynamic uint8_t buffer for raw binary data
     uint8_t *file_contents = malloc(file_info.st_size);
     if (file_contents == NULL) {
-        perror("malloc failed");
+        perror("Malloc Failed");
         fclose(nes_file);
         exit(EXIT_FAILURE);
     }
 
-    fread(file_contents, 1, file_info.st_size, nes_file);
+    size_t bytes_read = fread(file_contents, 1, file_info.st_size, nes_file);
+    if (bytes_read != file_info.st_size) { // Technically not the same data type, C *should* handle it but
+        free(file_contents);
+        fclose(nes_file);
+        exit(EXIT_FAILURE);
+    }
+    printf("The bytes read is equal to the file contents!\n");
 
     iNES_Header header;
-    memcpy(&header, file_contents, sizeof(struct iNES_Header));
+    // File Header Size
+    if (file_info.st_size >= sizeof(iNES_Header)) {
+        memcpy(&header, file_contents, sizeof(struct iNES_Header));
+        printf("First 16 Bytes of file have been copied\n");
+    } else {
+        free(file_contents);
+        fclose(nes_file);
+        printf("The file is not large enough to fill the NES header. Exiting.\n");
+        exit(EXIT_FAILURE);
+    }
 
+    // 16 Bytes WILL at least have been copied though it could still be an invalid file so for now we do at least one genuine check.
     // File Check
     if (header.magic_numbers[0] == 'N' && 
         header.magic_numbers[1] == 'E' && 
         header.magic_numbers[2] == 'S' && 
         header.magic_numbers[3] == 0x1A) {
         printf("The file is a valid NES File!\n");
+    } else {
+        free(file_contents);
+        fclose(nes_file);
+        printf("This file is NOT a valid NES file!\n");
+        exit(EXIT_FAILURE);
     }
 
     // First we skip the 16 byte header
@@ -87,16 +108,47 @@ int load_rom(Bus *bus) {
     // Remember the AND just makes every bit BUT bit 2, 0.
     int bit2 = header.flags6 & 0x04;
 
+    size_t required_size = 0;
+
+    // Now we finally read 32k bytes (if it's 1 we just do 16 twice)
+    if (header.prg_rom_16Kb == 0) {
+        printf("No program ROM? Well that certainly makes my job easier");
+        free(file_contents);
+        fclose(nes_file);
+        exit(EXIT_FAILURE);
+    } else if (header.prg_rom_16Kb >= 3) {
+        printf("Mmm it'd be nice if we could handle more ROM. Turns out we cant't. Maybe shrink the program lol. Or maybe this is where mappers come in");
+        free(file_contents);
+        fclose(nes_file);
+        exit(EXIT_FAILURE);
+    } else {
+        // We KNOW it's either 1 or 2.
+        if (bit2 == 4) {
+            required_size += 512; // Add the trainer shit
+        }
+        required_size += (16 + header.prg_rom_16Kb * 16384);
+
+        // Note that this doesn't account for CHR ROM.
+        // We're basically saying if it's not at LEAST this big, it can't work.
+        if (file_info.st_size < required_size) {
+            printf("Your file does not mean the minimum size requirements lmao.\n");
+            free(file_contents);
+            fclose(nes_file);
+            exit(EXIT_FAILURE);
+        } else {
+            printf("File size successfully verified!\n");
+        }
+    }
+
     // Remember it's left to right NOT right to left
     // So it's (0000 0100)
     if (bit2 == 4) {
         printf("We are skipping 512 bytes!\n");
-       prg_rom_start += 512;
+        prg_rom_start += 512;
     } else {
         printf("We are NOT skipping 512 bytes!\n");
     }
-
-    // Now we finally read 32k bytes (if it's 1 we just do 16 twice)
+    
     if (header.prg_rom_16Kb == 2) {
         printf("We are copying 32K into PRG ROM\n");
         memcpy(bus->prg_rom, prg_rom_start, 32768);
@@ -107,8 +159,8 @@ int load_rom(Bus *bus) {
     }
 
     // Clean up our resources!
-    fclose(nes_file);
     free(file_contents);
+    fclose(nes_file);
 
     printf("File read successfully!\n");
     return 0;

@@ -1,9 +1,10 @@
-Sync/
+roms/
 venv/
-AccuracyCoin.nes
 nestest.nes
+AccuracyCoin.nes
 bitwise-cheat-sheet.md
 emulator.exe
+nes.exe
 notes.txt
 test.c
 NES.md
