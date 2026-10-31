@@ -1,6 +1,8 @@
 roms/
 venv/
 nestest.nes
+sdl_test.c
+sdl_test.exe
 AccuracyCoin.nes
 bitwise-cheat-sheet.md
 emulator.exe
