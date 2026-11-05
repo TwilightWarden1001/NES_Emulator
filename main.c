@@ -3,8 +3,10 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <sys/stat.h>
+#include <SDL.h>
 #include "cpu.h"
 #include "bus.h"
+#include "window.h"
 
 // Function prototypes
 int load_rom(struct Bus *bus);
@@ -22,7 +24,7 @@ typedef struct iNES_Header{
     uint8_t padding[5];       // Unused padding (should be filled with zero, but some rippers put their name across bytes 7-15)
 } iNES_Header;
 
-int main(void) {
+int main(int argc, char *argv[]) {
     // 1. First we zero out and initialize the BUS. This holds all our memory
     Bus bus;
     bus_init(&bus);
@@ -33,9 +35,20 @@ int main(void) {
     // 3. Finally, now that we have our PRG
     CPU cpu;
     cpu_init(&cpu, &bus);
-
     cpu_print(&cpu);
 
+    Window window;
+    bool success = window_init(&window);
+    if (success == false) {
+        return 1;
+    }
+    
+    while (window.running) {
+        window_handle_events(&window);
+        window_render(&window);
+    }
+
+    window_destroy(&window);
     return 0;
 }
 
