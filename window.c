@@ -4,7 +4,7 @@
 bool window_init(Window *win) {
     // First we try to initialize the video thing.
     // SDL_INIT returns 0 on success.
-    if (SDL_Init(SDL_INIT_VIDEO) != 0) {
+    if (SDL_Init(SDL_INIT_VIDEO) < 0) {
         printf("SDL_INIT_VIDEO failed. %s\n", SDL_GetError());
         return false;
     }
@@ -46,7 +46,7 @@ bool window_init(Window *win) {
         NES_SCREEN_HEIGHT
     );
     // This CAN Fail and if it does, it needs to be cleaned up
-    if (logical_render != 0) {
+    if (logical_render < 0) {
         SDL_DestroyRenderer(win->renderer);
         SDL_DestroyWindow(win->window);
         SDL_Quit();
@@ -70,6 +70,7 @@ void window_handle_events(Window *win) {
             case SDL_KEYDOWN:
                 if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_ESCAPE) {
                     win->running = false;
+                    break;
                 }
             default:
                 break;

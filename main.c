@@ -3,7 +3,6 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <sys/stat.h>
-#include <SDL.h>
 #include "cpu.h"
 #include "bus.h"
 #include "window.h"

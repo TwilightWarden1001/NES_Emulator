@@ -11,10 +11,10 @@ all: $(TARGET)
 $(TARGET): $(OBJ)
 	$(CC) $(OBJ) -o $@ $(LDFLAGS) $(LDLIBS)
 
-%.o: %.c cpu.h bus.h
+%.o: %.c cpu.h bus.h window.h
 	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
 	rm -f $(OBJ) $(TARGET)
 
-.PHONY: all cleanNo
+.PHONY: all clean
