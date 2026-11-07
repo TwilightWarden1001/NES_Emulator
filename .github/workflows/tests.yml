@@ -1,0 +1,13 @@
+name: Tests
+
+on: [push]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build Tests
+        run: gcc -Wall -Wextra -g test.c cpu.c bus.c -o test
+      - name: Run Tests
+        run: ./test
