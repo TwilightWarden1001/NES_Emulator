@@ -21,10 +21,10 @@ uint8_t bus_read(struct Bus *bus, uint16_t address) {
     }
     // TODO: Add PPU, APU/IO, Mapper reads
 
-    // Mapper 0? I'm not sure
-    if (address >= 0x8000 && address <= 0xFFFF) {
+    // No need for <= FFFF, it's a 16 bit value, it cannot exceed 0xFFFF by definition
+    if (address >= 0x8000) {
         return bus->prg_rom[address - 0x8000];
     }
     
-    return 0x00; // Open bus / unmapped default
+    return 0x00; // Unmapped default
 }

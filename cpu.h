@@ -31,5 +31,7 @@ typedef struct CPU {
 void cpu_init(struct CPU *cpu, struct Bus *bus);
 void cpu_reset(struct CPU *cpu);
 void cpu_print(struct CPU *cpu);
+uint16_t addressing_zero_page(struct CPU *cpu);
+void cpu_step(struct CPU *cpu);
 
 #endif

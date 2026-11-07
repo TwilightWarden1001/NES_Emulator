@@ -16,6 +16,8 @@ void cpu_reset(struct CPU *cpu) {
     uint8_t high_byte = bus_read(cpu->bus, 0xFFFD);
     uint16_t reset_vector = (high_byte << 8) | low_byte;
 
+    printf("Low Byte: %d  High Byte: %d, Reset Vector: %d\n", low_byte, high_byte, reset_vector);
+
     cpu->program_counter = reset_vector;
     cpu->cycle_counter = 0;
 }
@@ -61,5 +63,30 @@ void LDA(struct CPU *cpu, uint8_t value) {
         cpu->status_register |= FLAG_NEGATIVE;
     } else {
         cpu->status_register &= ~FLAG_NEGATIVE;
+    }
+}
+
+uint16_t addressing_zero_page(struct CPU *cpu) {
+    uint16_t operand = bus_read(cpu->bus, cpu->program_counter);
+    cpu->program_counter++;
+    return operand;
+}
+
+void cpu_step(struct CPU *cpu) {
+    // The FIRST read is just to get a special "opcode" so we know what function to call
+    uint8_t opcode = bus_read(cpu->bus, cpu->program_counter);
+    cpu->program_counter++;
+
+    switch (opcode) {
+            case 0xA5:
+            {
+                // THIS is to get the ADDRESS of where the value is stored. This is NOT where the value is
+                uint16_t address = addressing_zero_page(cpu);
+                LDA(cpu, bus_read(cpu->bus, address));  // This reads whatever is stored at the ADDRESS and passes it to LDA
+                break;
+            }
+            default:
+                printf("Unimplemented Opcode");
+
     }
 }
