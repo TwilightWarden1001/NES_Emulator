@@ -1,8 +1,8 @@
 CC      = gcc
 CFLAGS  = -Wall -Wextra -g -IC:/msys64/ucrt64/include/SDL2
-LDFLAGS = -lmingw32 -lSDL2main -lSDL2
+LDFLAGS = -lmingw32 -lSDL2main -lSDL2 -lSDL2_ttf
 
-SRC    = main.c cpu.c bus.c window.c
+SRC    = cpu.c bus.c text.c menu.c window.c main.c
 OBJ    = $(SRC:.c=.o)
 TARGET = nes.exe
 
@@ -11,7 +11,7 @@ all: $(TARGET)
 $(TARGET): $(OBJ)
 	$(CC) $(OBJ) -o $@ $(LDFLAGS) $(LDLIBS)
 
-%.o: %.c cpu.h bus.h window.h
+%.o: %.c cpu.h bus.h text.h menu.h window.h 
 	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:

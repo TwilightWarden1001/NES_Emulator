@@ -3,6 +3,7 @@
 
 #include <SDL.h>
 #include <stdbool.h>
+#include <SDL_ttf.h>
 
 // First two are width and length. Third is the default scale (multiply both by the scale)
 #define NES_SCREEN_WIDTH 256

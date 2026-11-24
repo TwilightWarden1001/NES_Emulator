@@ -1,14 +1,21 @@
 #include "window.h"
+#include "text.h"
+#include "menu.h"
 #include <stdio.h>
 
 bool window_init(Window *win) {
-    // First we try to initialize the video thing.
+    // First we try to initialize the video and text thing.
     // SDL_INIT returns 0 on success.
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
         printf("SDL_INIT_VIDEO failed. %s\n", SDL_GetError());
         return false;
     }
 
+    int code = text_init();
+    if (code != 0) {
+        text_shutdown();
+        return false;
+    }
     // Eventually we'll have to add stuff like audio and joystick/game controller.
     // Second, make the window, variables are explained
     win->window = SDL_CreateWindow(
@@ -81,6 +88,7 @@ void window_handle_events(Window *win) {
 void window_render(Window *win) {
     SDL_SetRenderDrawColor(win->renderer, 0, 0, 0, 255); // Drawing operations. Obviously will be done by the PPU. 
     SDL_RenderClear(win->renderer);   // Again we do this for like, it's because it's a queue or something idk
+    draw_menu(win->renderer);
     SDL_RenderPresent(win->renderer); // Something about a backbuffer idk
 }
 
@@ -91,5 +99,6 @@ void window_destroy(Window *win) {
     if (win->window   != NULL) {
         SDL_DestroyWindow(win->window);
     }
+    text_shutdown();
     SDL_Quit();
 }

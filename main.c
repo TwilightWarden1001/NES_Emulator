@@ -6,7 +6,7 @@
 #include "cpu.h"
 #include "bus.h"
 #include "window.h"
-#include "test.c"
+#include "menu.h"
 
 // Function prototypes
 int load_rom(struct Bus *bus);
@@ -42,6 +42,9 @@ int main(int argc, char *argv[]) {
     if (success == false) {
         return 1;
     }
+
+    menu_init(window.renderer);
+
     while (window.running) {
         window_handle_events(&window);
         window_render(&window);
