@@ -11,7 +11,7 @@ all: $(TARGET)
 $(TARGET): $(OBJ)
 	$(CC) $(OBJ) -o $@ $(LDFLAGS) $(LDLIBS)
 
-%.o: %.c cpu.h bus.h text.h menu.h window.h 
+%.o: %.c cpu.h bus.h text.h menu.h window.h
 	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:

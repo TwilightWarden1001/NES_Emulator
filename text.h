@@ -6,7 +6,7 @@
 
 int text_init();
 void create_texture(SDL_Renderer*, const char*, SDL_Color);
-void render_copy(SDL_Renderer *renderer, SDL_Rect *rectangle);
+void render_copy(SDL_Renderer *renderer);
 void text_shutdown();
 
 #endif

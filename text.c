@@ -13,7 +13,7 @@ int text_init() {
     }
 
     // TTF_OpenFont returns NULL when it's not successful.
-    font = TTF_OpenFont("menu.ttf", 16);
+    font = TTF_OpenFont("menu.ttf", 18);
     if (font == NULL) {
         printf("TTF_OpenFont failed. %s\n", TTF_GetError());
         return -1;
@@ -43,8 +43,9 @@ void create_texture(SDL_Renderer *renderer, const char *text, SDL_Color color) {
     return;
 }
 
-void render_copy(SDL_Renderer *renderer, SDL_Rect *rectangle) {
-    SDL_RenderCopy(renderer, file_texture, NULL, rectangle);
+void render_copy(SDL_Renderer *renderer) {
+    SDL_Rect text_label = { 0, 0, texture_width, texture_height };
+    SDL_RenderCopy(renderer, file_texture, NULL, &text_label);
     return;
 }
 

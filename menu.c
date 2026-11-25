@@ -12,6 +12,6 @@ void draw_menu(SDL_Renderer *renderer) {
     SDL_SetRenderDrawColor(renderer, 245, 245, 220, 255);
     SDL_RenderFillRect (renderer, &rectangle);
     SDL_RenderDrawRect (renderer, &rectangle);
-    render_copy(renderer, &rectangle);
+    render_copy(renderer);
     return;
 }
